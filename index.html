@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spelling Game: My Home</title>
+    <title>Spelling Game: My Home Story</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Updated turquoise/teal theme for better harmony */
-            --primary-color: #008080; /* Teal */
-            --primary-hover: #009688; /* Lighter Teal */
-            --background-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            --container-bg: rgba(255, 255, 255, 0.92);
-            --text-color: #333333; /* Softer dark gray for text */
-            --light-text: #666666; /* Softer light gray */
-            --success-color: #28a745;
-            --error-color: #d9534f; /* Softer red */
+            /* New Cozy Library theme */
+            --primary-color: #A52A2A; /* Brown */
+            --primary-dark: #8B4513; /* SaddleBrown */
+            --background-gradient: linear-gradient(135deg, #F5F5DC 0%, #FAEBD7 100%); /* Beige to AntiqueWhite */
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #5D4037; /* Dark Brown */
+            --light-text: #795548; /* Brown */
+            --success-color: #2E7D32; /* Dark Green */
+            --error-color: #C62828; /* Dark Red */
+            --border-color: #D7CCC8;
+            --light-bg-highlight: #FBE9E7; /* DeepOrange Lighten-5 */
         }
         body {
             display: flex;
@@ -32,20 +34,30 @@
             overflow-x: hidden;
             color: var(--text-color);
         }
+        #effect-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
         #game-container {
             text-align: center;
             background: var(--container-bg);
             padding: 25px 30px;
-            border-radius: 20px;
+            border-radius: 24px;
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 650px;
+            max-width: 680px;
             position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(10px);
+            z-index: 1;
         }
         h1 {
+            font-family: 'Lora', serif;
             font-size: clamp(24px, 5vw, 32px);
             margin-bottom: 10px;
             color: var(--primary-color);
@@ -69,22 +81,35 @@
             margin-top: 4px;
             display: block;
         }
+        #vietnamese-translation {
+            font-family: 'Lora', serif;
+            font-size: clamp(16px, 4.5vw, 19px);
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin: 20px 0 10px 0;
+            padding: 10px;
+            background-color: var(--light-bg-highlight);
+            border-radius: 12px;
+            min-height: 30px;
+        }
         input[type="text"] {
             padding: 12px 18px;
             font-size: clamp(14px, 4vw, 16px);
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             margin: 15px 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
-            border: 2px solid #ced4da;
+            background-color: #fff;
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
         input[type="text"]:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(0, 128, 128, 0.25);
+            box-shadow: 0 0 8px rgba(165, 42, 42, 0.2);
         }
         .button-group {
             display: flex;
@@ -98,23 +123,25 @@
             font-size: clamp(14px, 4vw, 16px);
             cursor: pointer;
             background-color: var(--primary-color);
-            color: white;
+            color: #fff;
             border: none;
             border-radius: 10px;
             touch-action: manipulation;
             font-family: 'Poppins', sans-serif;
-            font-weight: 700; /* Bolder font weight */
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
+            font-weight: 700;
             transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        button:hover {
-            background-color: var(--primary-hover);
+        button:hover:not(:disabled) {
+            background-color: var(--primary-dark);
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 128, 128, 0.2);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.2);
         }
-        button:active {
+        button:active:not(:disabled) {
             transform: translateY(0);
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
         #hint {
             color: var(--light-text);
@@ -139,14 +166,13 @@
         }
         .particle {
             position: absolute;
-            pointer-events: none;
-            z-index: 10;
         }
     </style>
 </head>
 <body>
+    <div id="effect-container"></div>
     <div id="game-container">
-        <h1>Spelling Game: My Home</h1>
+        <h1>Spelling Game: My Home Story</h1>
         <p>Click Start to begin the game!<span class="instruction-vi">Nhấn Bắt đầu để chơi!</span></p>
         <button onclick="startGame()">Start</button>
     </div>
@@ -155,18 +181,18 @@
         // Data for the game
         const sentences = [
             { english: "My name is Sarah.", vietnamese: "Tên tôi là Sarah." },
-            { english: "I live with my mother and father in a flat.", vietnamese: "Tôi sống với bố mẹ trong một căn hộ." },
+            { english: "I live with my mother and father in a flat.", vietnamese: "Tôi sống với mẹ và cha trong một căn hộ." },
             { english: "The flat is on the fifth floor of a tall building.", vietnamese: "Căn hộ ở trên tầng năm của một tòa nhà cao tầng." },
             { english: "It has 14 floors and a car park in the basement.", vietnamese: "Nó có 14 tầng và một bãi đậu xe ở tầng hầm." },
             { english: "My father parks his car there.", vietnamese: "Bố tôi đậu xe ở đó." },
             { english: "Our flat is not in the centre of the city.", vietnamese: "Căn hộ của chúng tôi không ở trung tâm thành phố." },
             { english: "It is 3 kilometres from the centre.", vietnamese: "Nó cách trung tâm 3 km." },
             { english: "My father works in the city so he goes to work by train every day.", vietnamese: "Bố tôi làm việc trong thành phố nên ông đi làm bằng tàu hỏa mỗi ngày." },
-            { english: "He doesn’t drive his car.", vietnamese: "Ông ấy không lái xe hơi." },
+            { english: "He doesn’t drive his car.", vietnamese: "Ông ấy không lái xe." },
             { english: "He uses his car only at weekends.", vietnamese: "Ông chỉ sử dụng xe hơi vào cuối tuần." },
             { english: "Then he takes us into the country or to the beach.", vietnamese: "Sau đó, ông đưa chúng tôi về miền quê hoặc ra bãi biển." },
             { english: "Our flat has three bedrooms.", vietnamese: "Căn hộ của chúng tôi có ba phòng ngủ." },
-            { english: "There is a bedroom for my mother and father, one for me and one for my brother.", vietnamese: "Có một phòng ngủ cho bố mẹ tôi, một cho tôi và một cho anh trai tôi." },
+            { english: "There is a bedroom for my mother and father, one for me and one for my brother.", vietnamese: "Có một phòng ngủ cho mẹ và cha tôi, một cho tôi và một cho anh trai tôi." },
             { english: "There is a sitting room, a kitchen, a bathroom and a toilet.", vietnamese: "Có một phòng khách, một nhà bếp, một phòng tắm và một nhà vệ sinh." },
             { english: "We do not have a garden, but there is a small balcony.", vietnamese: "Chúng tôi không có vườn, nhưng có một ban công nhỏ." },
             { english: "There are some plants on the balcony.", vietnamese: "Có một vài chậu cây trên ban công." },
@@ -203,48 +229,54 @@
         let wrongAttempts = 0;
         const TOTAL_SENTENCES = sentences.length;
 
+        // Glitter/Confetti effect
         function showCelebrationEffect() {
-            const gameContainer = document.getElementById('game-container');
-            const colors = ['#008080', '#84fab0', '#8fd3f4', '#ffc107', '#fd7e14'];
+            const launchWave = (delay) => {
+                setTimeout(() => {
+                    const container = document.getElementById('effect-container');
+                    const confettiCount = 50;
+                    const colors = ['#A52A2A', '#FFD700', '#F5F5DC', '#8B4513', '#FFFFFF'];
 
-            for (let i = 0; i < 60; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                gameContainer.appendChild(particle);
+                    for (let i = 0; i < confettiCount; i++) {
+                        createConfetti(container, colors);
+                    }
+                }, delay);
+            };
 
-                const size = Math.floor(Math.random() * 15 + 5);
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-                if (Math.random() > 0.5) {
-                    particle.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
-                } else {
-                    particle.style.borderRadius = '50%';
-                }
-
-                const destinationX = (Math.random() - 0.5) * 350;
-                const destinationY = (Math.random() - 0.5) * 350;
-                const rotation = Math.random() * 520;
-                const delay = Math.random() * 200;
-
-                particle.style.left = '50%';
-                particle.style.top = '50%';
-                
-                const animation = particle.animate([
-                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-                    { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0) rotateZ(${rotation}deg)`, opacity: 0 }
-                ], {
-                    duration: Math.random() * 1000 + 1000,
-                    easing: 'cubic-bezier(0.1, .9, .57, 1)',
-                    delay: delay
-                });
-
-                animation.onfinish = () => {
-                    particle.remove();
-                };
-            }
+            launchWave(0);
+            launchWave(400);
+            launchWave(800);
         }
+
+        function createConfetti(container, colors) {
+            const confetti = document.createElement('div');
+            confetti.className = 'particle';
+            container.appendChild(confetti);
+
+            const size = Math.random() * 8 + 4;
+            const xPos = Math.random() * 100;
+
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size * 1.5}px`;
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = `${xPos}vw`;
+            confetti.style.top = '-20px';
+
+            const fallDuration = Math.random() * 2000 + 3000;
+            const horizontalDrift = (Math.random() - 0.5) * 200;
+            const rotation = Math.random() * 720 - 360;
+
+            const animation = confetti.animate([
+                { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                { transform: `translate(${horizontalDrift}px, ${window.innerHeight + 20}px) rotate(${rotation}deg)`, opacity: 0 }
+            ], {
+                duration: fallDuration,
+                easing: 'ease-in-out'
+            });
+
+            animation.onfinish = () => confetti.remove();
+        }
+
 
         function playSentence() {
             if (!isPlaying && sentences[currentSentenceIndex]) {
@@ -275,6 +307,9 @@
         }
 
         function checkAnswer() {
+            const checkBtn = document.getElementById('checkBtn');
+            if (checkBtn.disabled) return;
+
             const userInput = document.getElementById('userInput').value.trim();
             const result = document.getElementById('result');
             const currentSentence = sentences[currentSentenceIndex].english;
@@ -285,14 +320,18 @@
 
             if (normalizeApostrophes(userInput) === normalizeApostrophes(currentSentence)) {
                 stopAutoPlay();
+                checkBtn.disabled = true;
+                document.getElementById('hintBtn').disabled = true;
+                document.getElementById('playSoundBtn').disabled = true;
+
                 result.textContent = "Correct!";
                 result.className = 'correct';
                 
                 showCelebrationEffect();
-                setTimeout(showCelebrationEffect, 250);
 
                 if (wrongAttempts < 2) {
                     completedCount++;
+                    document.getElementById('completion').textContent = `Score: ${completedCount}/${TOTAL_SENTENCES}`;
                 }
                 
                 wrongAttempts = 0;
@@ -313,6 +352,10 @@
                 result.className = 'incorrect';
                 if (wrongAttempts >= 3) {
                     stopAutoPlay();
+                    checkBtn.disabled = true;
+                    document.getElementById('hintBtn').disabled = true;
+                    document.getElementById('playSoundBtn').disabled = true;
+
                     wrongAttempts = 0;
                     result.textContent = "Moving to the next sentence...";
                     setTimeout(() => {
@@ -331,31 +374,42 @@
 
         function updateGameScreen() {
             if (document.getElementById('userInput')) {
+                const currentData = sentences[currentSentenceIndex];
                 document.getElementById('userInput').value = '';
+                document.getElementById('vietnamese-translation').textContent = currentData.vietnamese;
                 document.getElementById('hint').textContent = '';
                 document.getElementById('result').textContent = '';
                 document.getElementById('completion').textContent = `Score: ${completedCount}/${TOTAL_SENTENCES}`;
+                
+                const checkBtn = document.getElementById('checkBtn');
+                if (checkBtn) checkBtn.disabled = false;
+                const hintBtn = document.getElementById('hintBtn');
+                if (hintBtn) hintBtn.disabled = false;
+                const playSoundBtn = document.getElementById('playSoundBtn');
+                if (playSoundBtn) playSoundBtn.disabled = false;
             }
         }
 
         function showHint() {
             const hintData = sentences[currentSentenceIndex];
-            document.getElementById('hint').innerHTML = `Hint: ${hintData.english}<br>(${hintData.vietnamese})`;
+            document.getElementById('hint').innerHTML = `Hint: ${hintData.english}`;
         }
 
         function startGame() {
             wrongAttempts = 0;
+            const currentData = sentences[currentSentenceIndex];
             document.getElementById('game-container').innerHTML = `
                 <h1>Spelling Master</h1>
                 <p>Listen carefully and type the sentence you hear.
                    <span class="instruction-vi">Hãy lắng nghe cẩn thận và gõ lại câu bạn nghe được.</span>
                    <span class="instruction-extra">Lưu ý: Phải viết hoa và có dấu câu chính xác.</span>
                 </p>
+                <p id="vietnamese-translation">${currentData.vietnamese}</p>
                 <input type="text" id="userInput" placeholder="Type the sentence here...">
                 <div class="button-group">
-                    <button onclick="playSentence()">&#9658; Play Sound</button>
-                    <button onclick="checkAnswer()">Check</button>
-                    <button onclick="showHint()">Hint</button>
+                    <button id="playSoundBtn" onclick="playSentence()">&#9658; Play Sound</button>
+                    <button id="checkBtn" onclick="checkAnswer()">Check</button>
+                    <button id="hintBtn" onclick="showHint()">Hint</button>
                     <button onclick="resetGame()">Reset Game</button>
                 </div>
                 <p id="completion">Score: ${completedCount}/${TOTAL_SENTENCES}</p>
@@ -375,7 +429,7 @@
             speechSynthesis.cancel();
             isPlaying = false;
             document.getElementById('game-container').innerHTML = `
-                <h1>Spelling Game: My Home</h1>
+                <h1>Spelling Game: My Home Story</h1>
                 <p>Click Start to begin the game!<span class="instruction-vi">Nhấn Bắt đầu để chơi!</span></p>
                 <button onclick="startGame()">Start</button>
             `;
